@@ -3363,7 +3363,6 @@ let pageCacheStatus = {
     'stars': false,
     'memos': false,
     'articles': false,
-    'changelog': false,
     'friends': false
 };
 
@@ -3501,9 +3500,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             case 'articles':
                 await renderArticles();
                 break;
-            case 'changelog':
-                await renderChangelog();
-                break;
             default:
                 await fetchGitHubData();
                 await renderOverview();
@@ -3561,9 +3557,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                         break;
                     case 'articles':
                         await renderArticles();
-                        break;
-                    case 'changelog':
-                        await renderChangelog();
                         break;
                     default:
                         await fetchGitHubData();
@@ -4550,193 +4543,6 @@ function initActivityChart(container) {
             }
         });
     });
-}
-
-// 获取更新日志数据的函数
-async function fetchChangelogData() {
-    try {
-        const CHANGELOG_API_CONFIG = {
-            URL: "https://open.apisql.cn/api/daily/$rest",
-            Method: "post",
-            Headers: {
-                "Accept": "application/json, text/plain, */*",
-                "Content-Type": "application/json;charset=UTF-8",
-                "Authorization": ""
-            },
-            Body: {
-                "meta": {
-                    "ds": "log",
-                    "table": "changelogs",
-                    "action": "r",
-                    "filters": {
-                        "project_id": 6
-                    },
-                    "pageSize": 10,
-                    "env": "dev"
-                }
-            },
-            Status: 200
-        };
-
-        const response = await fetch(CHANGELOG_API_CONFIG.URL, {
-            method: CHANGELOG_API_CONFIG.Method,
-            headers: CHANGELOG_API_CONFIG.Headers,
-            body: JSON.stringify(CHANGELOG_API_CONFIG.Body)
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Changelog API error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        // 修复：API返回的数据在rows字段中
-        return data.rows || [];
-    } catch (error) {
-        console.error('Error fetching changelog data:', error);
-        throw error;
-    }
-}
-
-// 全局变量保存 changelog 数据和当前显示数量
-let changelogDataCache = [];
-let changelogDisplayCount = 5;
-
-// 渲染更新日志的函数
-async function renderChangelog() {
-    try {
-        showSkeletonLoading('changelog');
-        
-        
-        // 更新到下一步：获取更新日志
-        await updateLoadingStep();
-        
-        const changelogs = await fetchChangelogData();
-        
-        // 更新到下一步：渲染日志列表
-        await updateLoadingStep();
-        const contentArea = document.querySelector('.content-area');
-        
-        if (!changelogs || changelogs.length === 0) {
-            contentArea.innerHTML = `
-                <div class="blankslate">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14,2 14,8 20,8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10,9 9,9 8,9"></polyline>
-                    </svg>
-                    <h3>暂无更新日志</h3>
-                    <p>还没有发布任何更新日志</p>
-                </div>
-            `;
-            return;
-        }
-
-        // 对更新日志进行排序（倒序）
-        const sortedChangelogs = [...changelogs].sort((a, b) => {
-            const dateA = new Date(a.created_at || a.updated_at || 0);
-            const dateB = new Date(b.created_at || b.updated_at || 0);
-            return dateB - dateA;
-        });
-
-        // 缓存数据和重置显示数量
-        changelogDataCache = sortedChangelogs;
-        changelogDisplayCount = 5;
-        renderChangelogList();
-    } catch (error) {
-        console.error('Error rendering changelog:', error);
-        const contentArea = document.querySelector('.content-area');
-        contentArea.innerHTML = `
-            <div class="blankslate">
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                    <line x1="12" y1="9" x2="12" y2="13"></line>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-                <h3>加载更新日志失败</h3>
-                <p>请稍后再试</p>
-            </div>
-        `;
-    } finally {
-        // 更新到最后一步：完成加载
-        await updateLoadingStep();
-        hideSkeletonLoading();
-    }
-}
-
-// 渲染 changelog 列表和加载更多按钮
-function renderChangelogList() {
-    const contentArea = document.querySelector('.content-area');
-    if (!changelogDataCache || changelogDataCache.length === 0) return;
-    const showList = changelogDataCache.slice(0, changelogDisplayCount);
-    let html = showList.map(changelog => {
-        let date;
-        if (changelog.created_at) {
-            date = new Date(changelog.created_at);
-        } else if (changelog.updated_at) {
-            date = new Date(changelog.updated_at);
-        } else {
-            date = new Date();
-        }
-        const formattedDate = date.toLocaleDateString('zh-CN', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        const getTypeClass = (type) => {
-            switch(type) {
-                case 'feature': return 'type-feature';
-                case 'fix': return 'type-fix';
-                case 'improvement': return 'type-improvement';
-                default: return 'type-default';
-            }
-        };
-        const getChineseType = (type) => {
-  const translations = {
-    'feature': '新功能',
-    'fix': '修复',
-    'improvement': '改进',
-    'other': '其他'
-  };
-  // 这种方法会把内容和样式混在一起
-  return `<span style="color:white">${translations[type] || type}</span>`;
-};
-        return `
-            <div class="changelog-card">
-                <div class="changelog-header">
-                    <h4 class="changelog-title">${changelog.title || '更新'}</h4>
-                    <span class="changelog-date">${formattedDate}</span>
-                </div>
-                <div class="changelog-description">${changelog.content || changelog.description || '暂无详细描述'}</div>
-                <div class="changelog-tags">
-                    <span class="changelog-tag version-tag">v${changelog.version || '1.0.0'}</span>
-                    ${changelog.type ? `<span class="changelog-tag type-tag ${getTypeClass(changelog.type)}">${getChineseType(changelog.type)}</span>` : ''}
-                    ${changelog.tags ? changelog.tags.split(',').map(tag => `<span class="changelog-tag">${tag.trim()}</span>`).join('') : ''}
-                </div>
-            </div>
-        `;
-    }).join('');
-    // 加载更多按钮
-    if (changelogDisplayCount < changelogDataCache.length) {
-        html += `<div class="load-more-memos"><button class="load-more-button" onclick="loadMoreChangelog()">加载更多</button></div>`;
-    }
-    contentArea.innerHTML = html;
-}
-
-// 加载更多 changelog
-function loadMoreChangelog() {
-    changelogDisplayCount += 5;
-    renderChangelogList();
-}
-
-// 显示更新日志的函数（用于社交链接点击）
-function showChangelog() {
-    // 切换到更新日志标签页
-    const changelogTab = document.querySelector('[data-tab="changelog"]');
-    if (changelogTab) {
-        changelogTab.click();
-    }
 }
 
 // 添加全局调试函数，用于手动清除所有贡献数据缓存
