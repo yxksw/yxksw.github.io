@@ -2476,6 +2476,40 @@ function showQRCode(title, qrCodeUrl, description, linkUrl = null) {
 // 获取用户 Stars 的仓库
 async function fetchStarredRepos() {
     try {
+        // 首先尝试从静态数据获取
+        try {
+            const staticResponse = await fetch('/github-data.json');
+            if (staticResponse.ok) {
+                const staticData = await staticResponse.json();
+                if (staticData.stars && staticData.stars.length > 0) {
+                    console.log('Using pre-fetched stars data from github-data.json');
+                    // 转换静态数据格式
+                    return staticData.stars.map(star => ({
+                        name: star.name,
+                        full_name: star.full_name || `${star.owner?.login || 'unknown'}/${star.name}`,
+                        owner: {
+                            login: star.owner?.login || 'unknown',
+                            avatar_url: star.owner?.avatar_url || ''
+                        },
+                        description: star.description || '',
+                        language: star.language,
+                        languages: star.languages || {},
+                        html_url: star.html_url,
+                        stargazers_count: star.stargazers_count || 0,
+                        forks_count: star.forks_count || 0,
+                        open_issues_count: star.open_issues_count || 0,
+                        created_at: star.created_at,
+                        updated_at: star.updated_at
+                    }));
+                }
+            }
+        } catch (staticError) {
+            console.log('Pre-fetched stars data not available, falling back to API');
+        }
+
+        // 如果没有静态数据，调用 API
+        console.log('Fetching starred repos from API...');
+        
         const headers = {
             'Accept': 'application/vnd.github.v3+json'
         };
@@ -2524,7 +2558,7 @@ async function fetchStarredRepos() {
         return repoDetails;
     } catch (error) {
         console.error('Error fetching starred repos:', error);
-        throw error; // 抛出错误而不是返回空数组
+        throw error;
     }
 }
 
