@@ -273,8 +273,8 @@ async function fetchGitHubData() {
             'Accept': 'application/vnd.github.v3+json'
         };
         
-        if (GITHUB_TOKEN) {
-            headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+        if (GH_TOKEN) {
+            headers['Authorization'] = `token ${GH_TOKEN}`;
         }
 
         // 获取用户仓库
@@ -578,8 +578,8 @@ async function fetchContributionData(year = new Date().getFullYear(), forceRefre
             'Accept': 'application/vnd.github.v3+json'
         };
         
-        if (GITHUB_TOKEN) {
-            headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+        if (GH_TOKEN) {
+            headers['Authorization'] = `token ${GH_TOKEN}`;
         }
 
         // 获取指定年份的贡献数据
@@ -1190,8 +1190,8 @@ async function checkContributionUpdates() {
                 'Accept': 'application/vnd.github.v3+json'
             };
             
-            if (GITHUB_TOKEN) {
-                headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+            if (GH_TOKEN) {
+                headers['Authorization'] = `token ${GH_TOKEN}`;
             }
             
             const response = await fetch(
@@ -2389,8 +2389,8 @@ async function fetchStarredRepos() {
             'Accept': 'application/vnd.github.v3+json'
         };
         
-        if (GITHUB_TOKEN) {
-            headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+        if (GH_TOKEN) {
+            headers['Authorization'] = `token ${GH_TOKEN}`;
         }
 
         const response = await fetch(`${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/starred`, {
@@ -2561,8 +2561,8 @@ async function fetchProjectDetail(projectName) {
             'Accept': 'application/vnd.github.v3+json'
         };
         
-        if (GITHUB_TOKEN) {
-            headers['Authorization'] = `token ${GITHUB_TOKEN}`;
+        if (GH_TOKEN) {
+            headers['Authorization'] = `token ${GH_TOKEN}`;
         }
 
         // 如果 projectName 包含 '/'，说明是完整的仓库名称

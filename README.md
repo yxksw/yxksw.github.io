@@ -11,7 +11,7 @@
    - GitHub 配置：
      ```javascript
      const GITHUB_USERNAME = '#';  // 替换为你的 GitHub 用户名
-     const GITHUB_TOKEN = '#';     // 替换为你的 GitHub Token
+     const GH_TOKEN = '#';     // 替换为你的 GitHub Token
      ```
    - Memos API 配置：
      ```javascript
@@ -125,7 +125,7 @@
 // GitHub API配置
 const GITHUB_USERNAME = 'your-username';  // 你的 GitHub 用户名
 const GITHUB_API_BASE = 'https://api.github.com';
-const GITHUB_TOKEN = 'your-github-token'; // GitHub Personal Access Token
+const GH_TOKEN = 'your-github-token'; // GitHub Personal Access Token
 ```
 
 **获取 GitHub Token：**
@@ -201,7 +201,7 @@ const ARTICLES_API_CONFIG = {
 ```javascript
 // GitHub 配置
 const GITHUB_USERNAME = 'your-username';  // 替换为你的 GitHub 用户名
-const GITHUB_TOKEN = 'your-token';        // 替换为你的 GitHub Token
+const GH_TOKEN = 'your-token';        // 替换为你的 GitHub Token
 ```
 
 ### 2. Memos 说说 API 配置
