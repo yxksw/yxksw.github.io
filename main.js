@@ -266,9 +266,68 @@ async function renderFriends() {
     }
 }
 
-// 获取GitHub数据的函数
+// 获取GitHub数据的函数 - 优先使用预取的静态数据
 async function fetchGitHubData() {
     try {
+        // 首先尝试加载预取的静态数据
+        try {
+            const staticResponse = await fetch('/github-data.json');
+            if (staticResponse.ok) {
+                const staticData = await staticResponse.json();
+                console.log('Using pre-fetched GitHub data from github-data.json');
+                console.log(`Data timestamp: ${staticData.timestamp}`);
+                
+                // 转换静态数据格式
+                const repoDetails = staticData.repos.map(repo => ({
+                    name: repo.name,
+                    description: repo.description || '',
+                    tags: Object.keys(repo.languages || {}),
+                    stars: repo.stargazers_count || repo.stars || 0,
+                    forks: repo.forks_count || repo.forks || 0,
+                    html_url: repo.html_url,
+                    updated_at: repo.updated_at,
+                    created_at: repo.created_at,
+                    last_commit: repo.lastCommit?.commit?.author?.date || repo.last_commit,
+                    is_fork: repo.fork || repo.is_fork,
+                    language: repo.language,
+                    open_issues: repo.open_issues_count || repo.open_issues || 0,
+                    size: repo.size,
+                    languages: repo.languages || {}
+                }));
+
+                // 过滤掉特定仓库
+                const filteredRepos = repoDetails.filter(repo => 
+                    repo.name !== 'yuazhi' && repo.name !== 'yxksw/yuazhi'
+                );
+
+                // 按更新时间排序
+                filteredRepos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+                // 更新项目数据
+                projectsData.length = 0;
+                projectsData.push(...filteredRepos);
+
+                // 更新进行中的项目
+                const mostRecentRepo = filteredRepos.find(repo => !repo.is_fork);
+                if (mostRecentRepo) {
+                    ongoingProject.name = mostRecentRepo.name;
+                    ongoingProject.description = mostRecentRepo.description;
+                    ongoingProject.tags = mostRecentRepo.tags;
+                    ongoingProject.stars = mostRecentRepo.stars;
+                    ongoingProject.forks = mostRecentRepo.forks;
+                    const daysSinceLastCommit = (new Date() - new Date(mostRecentRepo.last_commit)) / (1000 * 60 * 60 * 24);
+                    ongoingProject.progress = Math.max(0, Math.min(100, 100 - Math.floor(daysSinceLastCommit)));
+                }
+
+                return filteredRepos;
+            }
+        } catch (staticError) {
+            console.log('Pre-fetched data not available, falling back to API:', staticError.message);
+        }
+
+        // 如果没有静态数据或加载失败，回退到 API 请求
+        console.log('Fetching GitHub data from API...');
+        
         const headers = {
             'Accept': 'application/vnd.github.v3+json'
         };
@@ -574,6 +633,18 @@ async function fetchContributionData(year = new Date().getFullYear(), forceRefre
 
         console.log(`正在获取最新的贡献数据 (${year})...`);
         
+        // 首先尝试从静态数据获取
+        let staticData = null;
+        try {
+            const staticResponse = await fetch('/github-data.json');
+            if (staticResponse.ok) {
+                staticData = await staticResponse.json();
+                console.log('Using pre-fetched data for contribution graph');
+            }
+        } catch (e) {
+            console.log('No pre-fetched data available');
+        }
+        
         const headers = {
             'Accept': 'application/vnd.github.v3+json'
         };
@@ -694,53 +765,73 @@ async function fetchContributionData(year = new Date().getFullYear(), forceRefre
             }
         }
 
-        // 并行获取 Events API 数据和仓库 Commits 数据
-        const [allEvents, userRepos, allStars, allForks] = await Promise.all([
-            (async () => {
-                // 使用分页方式获取更多事件
-                let allEvents = [];
-                let page = 1;
-                let hasMorePages = true;
-                const maxPages = 20; // 增加最大获取页数，确保获取足够的事件
-                
-                while (hasMorePages && page <= maxPages) {
-                    const response = await fetch(
-                        `https://api.github.com/users/${GITHUB_USERNAME}/events?per_page=100&page=${page}`, 
-                        { headers }
-                    );
+        // 优先使用静态数据，如果没有则调用 API
+        let allEvents, userRepos, allStars, allForks;
+        
+        if (staticData) {
+            // 使用预取的静态数据
+            allEvents = staticData.events || [];
+            userRepos = (staticData.repos || []).filter(repo => !repo.fork);
+            allStars = (staticData.stars || []).map(star => ({
+                ...star,
+                type: 'star',
+                created_at: star.starred_at || star.updated_at,
+                repo: star.full_name?.split('/')[1] || star.name,
+                owner: star.full_name?.split('/')[0] || star.owner?.login
+            }));
+            allForks = (staticData.forks || []).map(fork => ({
+                ...fork,
+                type: 'fork',
+                created_at: fork.created_at || fork.updated_at,
+                repo: fork.name,
+                originalRepo: fork.source ? fork.source.full_name : null
+            }));
+            console.log(`Using static data: ${allEvents.length} events, ${userRepos.length} repos, ${allStars.length} stars, ${allForks.length} forks`);
+        } else {
+            // 调用 API 获取数据
+            [allEvents, userRepos, allStars, allForks] = await Promise.all([
+                (async () => {
+                    // 使用分页方式获取更多事件
+                    let allEvents = [];
+                    let page = 1;
+                    let hasMorePages = true;
+                    const maxPages = 20;
                     
-                    if (!response.ok) {
-                        throw new Error(`GitHub API error: ${response.status}`);
-                    }
-                    
-                    const events = await response.json();
-                    
-                    if (events.length === 0) {
-                        hasMorePages = false;
-                    } else {
-                        allEvents = [...allEvents, ...events];
+                    while (hasMorePages && page <= maxPages) {
+                        const response = await fetch(
+                            `https://api.github.com/users/${GITHUB_USERNAME}/events?per_page=100&page=${page}`, 
+                            { headers }
+                        );
                         
-                        // 检查最后一个事件的日期是否早于我们需要的年份
-                        const lastEventDate = new Date(events[events.length - 1].created_at);
-                        if (lastEventDate < startDate) {
-                            hasMorePages = false;
+                        if (!response.ok) {
+                            throw new Error(`GitHub API error: ${response.status}`);
                         }
                         
-                        page++;
+                        const events = await response.json();
+                        
+                        if (events.length === 0) {
+                            hasMorePages = false;
+                        } else {
+                            allEvents = [...allEvents, ...events];
+                            
+                            const lastEventDate = new Date(events[events.length - 1].created_at);
+                            if (lastEventDate < startDate) {
+                                hasMorePages = false;
+                            }
+                            
+                            page++;
+                        }
                     }
-                }
-                
-                // 对 Events 按时间倒序排序，确保最新的 Events 在前面
-                allEvents.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                
-                return allEvents;
-            })(),
-            getUserRepos(),
-            getUserStars(startDate, endDate),
-            getUserForks(startDate, endDate)
-        ]);
-        
-        console.log(`获取到 ${allEvents.length} 个GitHub事件，${userRepos.length} 个用户仓库，${allStars.length} 个 Stars，${allForks.length} 个 Forks`);
+                    
+                    allEvents.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    return allEvents;
+                })(),
+                getUserRepos(),
+                getUserStars(startDate, endDate),
+                getUserForks(startDate, endDate)
+            ]);
+            console.log(`Fetched from API: ${allEvents.length} events, ${userRepos.length} repos, ${allStars.length} stars, ${allForks.length} forks`);
+        }
         
         // 对 Stars 和 Forks 按时间倒序排序，确保最新的在前面
         allStars.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));

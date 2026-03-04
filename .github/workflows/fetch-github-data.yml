@@ -1,0 +1,38 @@
+name: Fetch GitHub Data and Deploy
+
+on:
+  push:
+    branches: [ main, master ]
+  schedule:
+    # 每6小时自动更新一次
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Fetch GitHub Data
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GITHUB_USERNAME: yxksw
+      run: |
+        node scripts/fetch-github-data.js
+        
+    - name: Deploy to Cloudflare Pages
+      uses: cloudflare/pages-action@v1
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        projectName: yxksw-github
+        directory: .
+        gitHubToken: ${{ secrets.GITHUB_TOKEN }}
