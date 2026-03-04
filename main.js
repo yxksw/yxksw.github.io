@@ -72,7 +72,7 @@ const ongoingProject = {
 // GitHub API配置
 const GITHUB_USERNAME = 'yxksw';
 const GITHUB_API_BASE = 'https://api.github.com';
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_TOKEN = process.env.GH_TOKEN;
 
 // Memos API配置
 const MEMOS_API_BASE = 'https://mastodon-api.050815.xyz/api/v1/memo';
