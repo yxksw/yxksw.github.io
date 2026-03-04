@@ -1,49 +1,49 @@
 name: Deploy to GitHub Pages
 on:
-  push:
-    branches: [ main, master ]
-  schedule:
-    - cron: '0 */6 * * *'
-  workflow_dispatch:
-    inputs:
-      enabled:
-        description: 'Enable deployment'
-        required: true
-        default: 'false'
+    push:
+        branches: [main, master]
+    schedule:
+        - cron: "0 */6 * * *"
+    workflow_dispatch:
+        inputs:
+            enabled:
+                description: "Enable deployment"
+                required: true
+                default: "false"
 env:
-  ENABLED: 'false'
+    ENABLED: "false"
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+    contents: read
+    pages: write
+    id-token: write
 concurrency:
-  group: pages
-  cancel-in-progress: false
+    group: pages
+    cancel-in-progress: false
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    if: github.event.inputs.enabled == 'true' || env.ENABLED == 'true'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Fetch GitHub Data
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          GITHUB_USERNAME: yxksw
-        run: node scripts/fetch-github-data.js
-      - uses: actions/configure-pages@v4
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.event.inputs.enabled == 'true' || env.ENABLED == 'true'
-    steps:
-      - uses: actions/deploy-pages@v4
-        id: deployment
+    build:
+        runs-on: ubuntu-latest
+        if: github.event.inputs.enabled == 'true' || env.ENABLED == 'true'
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+            - name: Fetch GitHub Data
+              env:
+                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+                  GITHUB_USERNAME: yxksw
+              run: node scripts/fetch-github-data.js
+            - uses: actions/configure-pages@v4
+            - uses: actions/upload-pages-artifact@v3
+              with:
+                  path: .
+    deploy:
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        runs-on: ubuntu-latest
+        needs: build
+        if: github.event.inputs.enabled == 'true' || env.ENABLED == 'true'
+        steps:
+            - uses: actions/deploy-pages@v4
+              id: deployment

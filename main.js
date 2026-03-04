@@ -2419,17 +2419,18 @@ async function renderProjects() {
 }
 
 // 修改微信二维码弹窗功能
-function showWechat(event) {
+function showTelegram(event) {
     event.preventDefault();
-    showQRCode('微信', 'https://cdn.rjjr.cn/avatar/IMG_0231.JPG', '扫码添加微信');
+    const telegramUrl = 'https://cdn.jsdmirror.com/gh/zsxcoder/github-img@main/img/telegram-invite.avif';
+    showQRCode('Telegram', telegramUrl, '直接点击此处加好友', 'https://t.me/yxksw');
 }
 
 // 添加 QQ 二维码弹窗功能
 function showQQ(event) {
     event.preventDefault();
     const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-    const qrCodeUrl = isDarkMode ? 'https://cdn.rjjr.cn/avatar/IMG_0233.JPG' : 'https://cdn.rjjr.cn/assets/e1f67108d1e5ab51216cee6f503b878d.png';
-    showQRCode('QQ', qrCodeUrl, '直接点击此处加好友', 'https://qm.qq.com/q/W2oxo3R3qy');
+    const qrCodeUrl = isDarkMode ? 'https://cdn.jsdmirror.com/gh/zsxcoder/github-img@main/img/qq-dark.avif' : 'https://cdn.jsdmirror.com/gh/zsxcoder/github-img@main/img/qq-invite.avif';
+    showQRCode('QQ', qrCodeUrl, '直接点击此处加好友', 'https://qm.qq.com/q/rMcURttFFC');
 }
 
 // 通用的二维码弹窗显示函数
