@@ -70,13 +70,13 @@ const ongoingProject = {
 };
 
 // GitHub API配置
-const GITHUB_USERNAME = 'yuazhi';
+const GITHUB_USERNAME = 'yxksw';
 const GITHUB_API_BASE = 'https://api.github.com';
-const GITHUB_TOKEN = '#';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 // Memos API配置
-const MEMOS_API_BASE = '#';
-const MEMOS_TOKEN = '#';
+const MEMOS_API_BASE = 'https://mastodon-api.050815.xyz/api/v1/memo';
+const MEMOS_TOKEN = '';
 // const MEMOS_RESOURCE_BASE = 'http://120.26.160.134:5230/o/r/'; // Memos 资源的基础URL
 
 // 文章 API 配置
@@ -3546,44 +3546,26 @@ function startContributionUpdateChecker() {
 }
 
 // 获取Memos数据的函数
-async function fetchMemosData() {
+async function fetchMemosData(page = 1, limit = 20) {
     try {
-        let allMemos = [];
-        let nextPageToken = null;
-        
-        // 循环获取所有页面的memo数据
-        do {
-            const url = nextPageToken 
-                ? `${MEMOS_API_BASE}/memos?pageToken=${nextPageToken}`
-                : `${MEMOS_API_BASE}/memos`;
-                
-            console.log(`正在获取memo数据: ${url}`);
-                
-            const response = await fetch(url, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${MEMOS_TOKEN}`
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`Memos API error: ${response.status}`);
+        const url = `${MEMOS_API_BASE}?page=${page}&limit=${limit}`;
+        console.log(`正在获取memo数据: ${url}`);
+
+        const response = await fetch(url, {
+            headers: {
+                'Accept': 'application/json'
             }
-            
-            const data = await response.json();
-            const memos = data.memos || [];
-            
-            console.log(`本页获取到 ${memos.length} 个memo`);
-            allMemos.push(...memos);
-            
-            // 获取下一页的token
-            nextPageToken = data.nextPageToken;
-            console.log(`下一页token: ${nextPageToken}`);
-            
-        } while (nextPageToken);
-        
-        console.log(`总共获取到 ${allMemos.length} 个memo`);
-        return allMemos;
+        });
+
+        if (!response.ok) {
+            throw new Error(`Memos API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const memos = Array.isArray(data) ? data : (data.memos || []);
+
+        console.log(`获取到 ${memos.length} 个memo`);
+        return memos;
     } catch (error) {
         console.error('Error fetching Memos data:', error);
         throw error;
@@ -3602,38 +3584,50 @@ function styleInlineTags(content) {
 // 全局变量存储说说数据
 let allUnpinnedMemos = [];
 let currentDisplayCount = 0;
+let currentPage = 1;
+let hasMorePages = true;
 const MEMOS_PER_LOAD = 5; // 每次加载5个说说
+const MEMOS_PER_PAGE = 20; // 每页从API获取20个说说
 
 // 创建单个说说HTML的函数
 function createMemoHTML(memo) {
-    const date = new Date(memo.createTime);
+    // 新API使用 createdTs (秒级时间戳)，需要转换为毫秒
+    const date = new Date((memo.createdTs || memo.createTime) * 1000);
     const formattedDate = timeAgo(date);
 
     // 处理标签 - 将标签直接处理到内容中
     const processedContent = styleInlineTags(memo.content);
 
-    // Group and count reactions
+    // Group and count reactions (新API使用 relationList)
     const groupedReactions = {};
-    if (memo.reactions) {
-        memo.reactions.forEach(reaction => {
-            groupedReactions[reaction.reactionType] = (groupedReactions[reaction.reactionType] || 0) + 1;
+    const reactions = memo.reactions || memo.relationList || [];
+    if (reactions && reactions.length > 0) {
+        reactions.forEach(reaction => {
+            const reactionType = reaction.reactionType || reaction.type || '👍';
+            groupedReactions[reactionType] = (groupedReactions[reactionType] || 0) + 1;
         });
     }
 
-    // 处理资源（图片等）
-    const resourcesHTML = memo.resources && memo.resources.length > 0
+    // 处理资源（图片等）- 新API使用 resourceList
+    const resources = memo.resources || memo.resourceList || [];
+    const resourcesHTML = resources.length > 0
         ? `<div class="memo-resources">${
-            memo.resources.map(resource => {
-                const memosBaseUrl = MEMOS_API_BASE.replace('/api/v1', '');
-                const resourcePathSegment = resource.name.replace('resources/', '');
-                const imageUrl = resource.externalLink || `${memosBaseUrl}/file/resources/${resourcePathSegment}/${resource.filename}?thumbnail=true`;
-                return `<img src="${imageUrl}" alt="资源图片" class="memo-resource">`;
+            resources.map(resource => {
+                // 新API可能有不同的资源结构
+                const imageUrl = resource.externalLink || resource.url || resource.link;
+                if (imageUrl) {
+                    return `<img src="${imageUrl}" alt="资源图片" class="memo-resource">`;
+                }
+                return '';
             }).join('')
         }</div>`
         : '';
 
     // 添加置顶标识的类名
     const pinnedClass = memo.pinned ? 'pinned-memo' : '';
+
+    // 新API使用 rowStatus 替代 state
+    const rowStatus = memo.rowStatus || memo.state;
 
     return `
         <div class="memo-card ${pinnedClass}">
@@ -3666,7 +3660,7 @@ function createMemoHTML(memo) {
             </div>
             <div class="memo-meta">
                 ${memo.visibility === 'PRIVATE' ? '<span class="memo-visibility">私密</span>' : ''}
-                ${memo.state === 'ARCHIVED' ? '<span class="memo-archived">已归档</span>' : ''}
+                ${rowStatus === 'ARCHIVED' ? '<span class="memo-archived">已归档</span>' : ''}
             </div>
         </div>
     `;
@@ -3675,18 +3669,23 @@ function createMemoHTML(memo) {
 async function renderMemos() {
     try {
         showSkeletonLoading('memos');
-        
-        
+
+
         // 更新到下一步：获取说说数据
         await updateLoadingStep();
-        
-        const memos = await fetchMemosData();
-        
+
+        // 重置分页状态
+        currentPage = 1;
+        allUnpinnedMemos = [];
+        currentDisplayCount = 0;
+
+        const memos = await fetchMemosData(currentPage, MEMOS_PER_PAGE);
+
         // 更新到下一步：渲染说说列表
         await updateLoadingStep();
-        
+
         const contentArea = document.querySelector('.content-area');
-        
+
         if (!memos || memos.length === 0) {
             contentArea.innerHTML = `
                 <div class="blankslate">
@@ -3700,6 +3699,9 @@ async function renderMemos() {
             return;
         }
 
+        // 判断是否有更多页（如果返回的数据量等于每页大小，则认为还有下一页）
+        hasMorePages = memos.length >= MEMOS_PER_PAGE;
+
         // 将说说按置顶状态分组
         const pinnedMemos = memos.filter(memo => memo.pinned);
         allUnpinnedMemos = memos.filter(memo => !memo.pinned);
@@ -3708,17 +3710,17 @@ async function renderMemos() {
         currentDisplayCount = Math.min(MEMOS_PER_LOAD, allUnpinnedMemos.length);
 
         // 渲染置顶说说
-        const pinnedMemosHTML = pinnedMemos.length > 0 ? 
+        const pinnedMemosHTML = pinnedMemos.length > 0 ?
             `<div class="pinned-memos-section">
                 ${pinnedMemos.map(createMemoHTML).join('')}
             </div>` : '';
 
         // 初始显示的非置顶说说
         const initialMemosHTML = allUnpinnedMemos.slice(0, currentDisplayCount).map(createMemoHTML).join('');
-        
+
         // 加载更多按钮（当还有更多说说时显示）
-        const hasMoreMemos = currentDisplayCount < allUnpinnedMemos.length;
-        const loadMoreButton = hasMoreMemos ? 
+        const hasMoreMemos = currentDisplayCount < allUnpinnedMemos.length || hasMorePages;
+        const loadMoreButton = hasMoreMemos ?
             `<div class="load-more-memos">
                 <button class="load-more-button" onclick="loadMoreMemos()">
                     加载更多
@@ -3755,33 +3757,102 @@ async function renderMemos() {
 }
 
 // 添加加载更多说说的函数
-function loadMoreMemos() {
+async function loadMoreMemos() {
     const unpinnedContainer = document.querySelector('.unpinned-memos-container');
     const loadMoreButton = document.querySelector('.load-more-button');
-    
-    if (!unpinnedContainer || !allUnpinnedMemos.length) return;
-    
-    // 计算下一批要显示的说说
-    const nextBatchStart = currentDisplayCount;
-    const nextBatchEnd = Math.min(currentDisplayCount + MEMOS_PER_LOAD, allUnpinnedMemos.length);
-    const nextBatchMemos = allUnpinnedMemos.slice(nextBatchStart, nextBatchEnd);
-    
-    // 将新说说添加到容器中
-    const newMemosHTML = nextBatchMemos.map(createMemoHTML).join('');
-    unpinnedContainer.insertAdjacentHTML('beforeend', newMemosHTML);
-    
-    // 更新当前显示计数
-    currentDisplayCount = nextBatchEnd;
-    
-    // 检查是否还有更多说说
-    const remainingCount = allUnpinnedMemos.length - currentDisplayCount;
-    if (remainingCount <= 0) {
-        // 移除加载更多按钮
+
+    if (!unpinnedContainer) return;
+
+    // 显示加载状态
+    if (loadMoreButton) {
+        loadMoreButton.disabled = true;
+        loadMoreButton.textContent = '加载中...';
+    }
+
+    try {
+        // 检查本地缓存中是否还有未显示的说说
+        const remainingLocalCount = allUnpinnedMemos.length - currentDisplayCount;
+
+        if (remainingLocalCount > 0) {
+            // 本地还有未显示的说说，直接显示
+            const nextBatchStart = currentDisplayCount;
+            const nextBatchEnd = Math.min(currentDisplayCount + MEMOS_PER_LOAD, allUnpinnedMemos.length);
+            const nextBatchMemos = allUnpinnedMemos.slice(nextBatchStart, nextBatchEnd);
+
+            // 将新说说添加到容器中
+            const newMemosHTML = nextBatchMemos.map(createMemoHTML).join('');
+            unpinnedContainer.insertAdjacentHTML('beforeend', newMemosHTML);
+
+            // 更新当前显示计数
+            currentDisplayCount = nextBatchEnd;
+
+            // 检查是否还有更多说说
+            const remainingCount = allUnpinnedMemos.length - currentDisplayCount;
+            if (remainingCount <= 0 && !hasMorePages) {
+                // 移除加载更多按钮
+                if (loadMoreButton) {
+                    loadMoreButton.parentElement.remove();
+                }
+            }
+        } else if (hasMorePages) {
+            // 本地没有更多说说，但服务端可能还有，加载下一页
+            currentPage++;
+            const newMemos = await fetchMemosData(currentPage, MEMOS_PER_PAGE);
+
+            if (newMemos && newMemos.length > 0) {
+                // 判断是否有更多页
+                hasMorePages = newMemos.length >= MEMOS_PER_PAGE;
+
+                // 过滤掉置顶的（置顶的一般只在第一页）
+                const newUnpinnedMemos = newMemos.filter(memo => !memo.pinned);
+
+                // 添加到本地缓存
+                allUnpinnedMemos.push(...newUnpinnedMemos);
+
+                // 显示新加载的说说
+                const nextBatchEnd = Math.min(MEMOS_PER_LOAD, newUnpinnedMemos.length);
+                const nextBatchMemos = newUnpinnedMemos.slice(0, nextBatchEnd);
+
+                const newMemosHTML = nextBatchMemos.map(createMemoHTML).join('');
+                unpinnedContainer.insertAdjacentHTML('beforeend', newMemosHTML);
+
+                // 更新当前显示计数
+                currentDisplayCount += nextBatchEnd;
+
+                // 恢复按钮状态
+                if (loadMoreButton) {
+                    loadMoreButton.disabled = false;
+                    loadMoreButton.textContent = '加载更多';
+                }
+
+                // 检查是否还有更多说说
+                const remainingCount = allUnpinnedMemos.length - currentDisplayCount;
+                if (remainingCount <= 0 && !hasMorePages) {
+                    if (loadMoreButton) {
+                        loadMoreButton.parentElement.remove();
+                    }
+                }
+            } else {
+                // 没有更多数据了
+                hasMorePages = false;
+                if (loadMoreButton) {
+                    loadMoreButton.parentElement.remove();
+                }
+            }
+        } else {
+            // 没有更多数据了
+            if (loadMoreButton) {
+                loadMoreButton.parentElement.remove();
+            }
+        }
+    } catch (error) {
+        console.error('Error loading more memos:', error);
         if (loadMoreButton) {
-            loadMoreButton.parentElement.remove();
+            loadMoreButton.disabled = false;
+            loadMoreButton.textContent = '加载失败，重试';
         }
     }
-    
+
     // 重新初始化灯箱功能
     initLightbox();
 }
