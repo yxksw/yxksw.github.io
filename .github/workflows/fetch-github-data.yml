@@ -1,0 +1,50 @@
+name: Fetch GitHub Data and Deploy
+
+on:
+    push:
+        branches: [main, master]
+    schedule:
+        # 每6小时自动更新一次
+        - cron: "0 */6 * * *"
+    workflow_dispatch:
+
+jobs:
+    fetch-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - name: Fetch GitHub Data
+              env:
+                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+                  GITHUB_USERNAME: yxksw
+              run: |
+                  node scripts/fetch-github-data.js
+
+            - name: Check generated file
+              run: |
+                  ls -la github-data.json || echo "File not found!"
+
+            - name: Commit and Push github-data.json
+              run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
+                  git add github-data.json
+                  git diff --staged --quiet || (git commit -m "Update github-data.json" && git push)
+              continue-on-error: true
+
+            - name: Deploy to Cloudflare Pages
+              uses: cloudflare/pages-action@v1
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  projectName: home-yxksw
+                  directory: .
+                  gitHubToken: ${{ secrets.GITHUB_TOKEN }}
