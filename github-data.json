@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-06T10:51:06.219Z",
+  "timestamp": "2026-03-06T10:57:01.825Z",
   "username": "yxksw",
   "repos": [
     {
@@ -70,8 +70,8 @@
       "releases_url": "https://api.github.com/repos/yxksw/home-yxksw/releases{/id}",
       "deployments_url": "https://api.github.com/repos/yxksw/home-yxksw/deployments",
       "created_at": "2026-03-04T06:26:16Z",
-      "updated_at": "2026-03-06T10:50:38Z",
-      "pushed_at": "2026-03-06T10:50:35Z",
+      "updated_at": "2026-03-06T10:56:39Z",
+      "pushed_at": "2026-03-06T10:56:36Z",
       "git_url": "git://github.com/yxksw/home-yxksw.git",
       "ssh_url": "git@github.com:yxksw/home-yxksw.git",
       "clone_url": "https://github.com/yxksw/home-yxksw.git",
@@ -112,25 +112,25 @@
         "pull": true
       },
       "lastCommit": {
-        "sha": "6e8776eaf2885aae009e41086be86b0b93e80b84",
-        "node_id": "C_kwDORd_FbdoAKDZlODc3NmVhZjI4ODVhYWUwMDllNDEwODZiZTg2YjBiOTNlODBiODQ",
+        "sha": "b0eeb2d744f23721ba703eb4073ad38b028c3fb4",
+        "node_id": "C_kwDORd_FbdoAKGIwZWViMmQ3NDRmMjM3MjFiYTcwM2ViNDA3M2FkMzhiMDI4YzNmYjQ",
         "commit": {
           "author": {
             "name": "Mao Chenyu",
             "email": "chenyumao815@outlook.com",
-            "date": "2026-03-06T10:50:26Z"
+            "date": "2026-03-06T10:56:25Z"
           },
           "committer": {
             "name": "Mao Chenyu",
             "email": "chenyumao815@outlook.com",
-            "date": "2026-03-06T10:50:26Z"
+            "date": "2026-03-06T10:56:25Z"
           },
-          "message": "fix: 改进 PushEvent 的提交计数逻辑\n\n优化贡献数据统计中 PushEvent 的处理方式，优先从 allCommits 中查找相关提交，确保计数准确。同时改进提交信息的显示格式。",
+          "message": "fix: 放宽贡献数据中日期的匹配条件\n\n修改 fetchContributionData 函数中的日期匹配逻辑，允许前后一天的差异\n优先使用 allCommits 中的数据计算提交次数",
           "tree": {
-            "sha": "8ab5700cf35183e0b495b9cd0535baac2fad736f",
-            "url": "https://api.github.com/repos/yxksw/home-yxksw/git/trees/8ab5700cf35183e0b495b9cd0535baac2fad736f"
+            "sha": "36a916dc4f221d19d63a800c5b0d5e55d2b1f2da",
+            "url": "https://api.github.com/repos/yxksw/home-yxksw/git/trees/36a916dc4f221d19d63a800c5b0d5e55d2b1f2da"
           },
-          "url": "https://api.github.com/repos/yxksw/home-yxksw/git/commits/6e8776eaf2885aae009e41086be86b0b93e80b84",
+          "url": "https://api.github.com/repos/yxksw/home-yxksw/git/commits/b0eeb2d744f23721ba703eb4073ad38b028c3fb4",
           "comment_count": 0,
           "verification": {
             "verified": false,
@@ -140,9 +140,9 @@
             "verified_at": null
           }
         },
-        "url": "https://api.github.com/repos/yxksw/home-yxksw/commits/6e8776eaf2885aae009e41086be86b0b93e80b84",
-        "html_url": "https://github.com/yxksw/home-yxksw/commit/6e8776eaf2885aae009e41086be86b0b93e80b84",
-        "comments_url": "https://api.github.com/repos/yxksw/home-yxksw/commits/6e8776eaf2885aae009e41086be86b0b93e80b84/comments",
+        "url": "https://api.github.com/repos/yxksw/home-yxksw/commits/b0eeb2d744f23721ba703eb4073ad38b028c3fb4",
+        "html_url": "https://github.com/yxksw/home-yxksw/commit/b0eeb2d744f23721ba703eb4073ad38b028c3fb4",
+        "comments_url": "https://api.github.com/repos/yxksw/home-yxksw/commits/b0eeb2d744f23721ba703eb4073ad38b028c3fb4/comments",
         "author": {
           "login": "zsxcoder",
           "id": 249214916,
@@ -187,14 +187,14 @@
         },
         "parents": [
           {
-            "sha": "92224a92acac6720c69856f840b73f3959f7fd34",
-            "url": "https://api.github.com/repos/yxksw/home-yxksw/commits/92224a92acac6720c69856f840b73f3959f7fd34",
-            "html_url": "https://github.com/yxksw/home-yxksw/commit/92224a92acac6720c69856f840b73f3959f7fd34"
+            "sha": "7da0ff4f7b2079b02e283d150ca05773bbf1110d",
+            "url": "https://api.github.com/repos/yxksw/home-yxksw/commits/7da0ff4f7b2079b02e283d150ca05773bbf1110d",
+            "html_url": "https://github.com/yxksw/home-yxksw/commit/7da0ff4f7b2079b02e283d150ca05773bbf1110d"
           }
         ]
       },
       "languages": {
-        "JavaScript": 217155,
+        "JavaScript": 217619,
         "CSS": 190611,
         "HTML": 12960
       },
@@ -9936,6 +9936,32 @@
   ],
   "events": [
     {
+      "id": "9105314447",
+      "type": "PushEvent",
+      "actor": {
+        "id": 260226767,
+        "login": "yxksw",
+        "display_login": "yxksw",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/yxksw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/260226767?"
+      },
+      "repo": {
+        "id": 1172292973,
+        "name": "yxksw/home-yxksw",
+        "url": "https://api.github.com/repos/yxksw/home-yxksw"
+      },
+      "payload": {
+        "repository_id": 1172292973,
+        "push_id": 31399101103,
+        "ref": "refs/heads/main",
+        "head": "b0eeb2d744f23721ba703eb4073ad38b028c3fb4",
+        "before": "7da0ff4f7b2079b02e283d150ca05773bbf1110d"
+      },
+      "public": true,
+      "created_at": "2026-03-06T10:56:37Z"
+    },
+    {
       "id": "9105123233",
       "type": "PushEvent",
       "actor": {
@@ -14338,32 +14364,6 @@
       },
       "public": true,
       "created_at": "2026-03-04T07:30:43Z"
-    },
-    {
-      "id": "9016996381",
-      "type": "PushEvent",
-      "actor": {
-        "id": 260226767,
-        "login": "yxksw",
-        "display_login": "yxksw",
-        "gravatar_id": "",
-        "url": "https://api.github.com/users/yxksw",
-        "avatar_url": "https://avatars.githubusercontent.com/u/260226767?"
-      },
-      "repo": {
-        "id": 1172292973,
-        "name": "yxksw/home-yxksw",
-        "url": "https://api.github.com/repos/yxksw/home-yxksw"
-      },
-      "payload": {
-        "repository_id": 1172292973,
-        "push_id": 31310957028,
-        "ref": "refs/heads/main",
-        "head": "ff4910b28bee454f71a79cc86b132a72d73d3504",
-        "before": "1fad01c3fefda46b969435f2dc6f6afe2dc6cf94"
-      },
-      "public": true,
-      "created_at": "2026-03-04T07:21:16Z"
     }
   ],
   "forks": [
@@ -14435,8 +14435,8 @@
       "releases_url": "https://api.github.com/repos/yxksw/home-yxksw/releases{/id}",
       "deployments_url": "https://api.github.com/repos/yxksw/home-yxksw/deployments",
       "created_at": "2026-03-04T06:26:16Z",
-      "updated_at": "2026-03-06T10:50:38Z",
-      "pushed_at": "2026-03-06T10:50:35Z",
+      "updated_at": "2026-03-06T10:56:39Z",
+      "pushed_at": "2026-03-06T10:56:36Z",
       "git_url": "git://github.com/yxksw/home-yxksw.git",
       "ssh_url": "git@github.com:yxksw/home-yxksw.git",
       "clone_url": "https://github.com/yxksw/home-yxksw.git",
@@ -22421,7 +22421,7 @@
       "releases_url": "https://api.github.com/repos/chenyme/grok2api/releases{/id}",
       "deployments_url": "https://api.github.com/repos/chenyme/grok2api/deployments",
       "created_at": "2025-10-10T09:00:02Z",
-      "updated_at": "2026-03-06T10:19:08Z",
+      "updated_at": "2026-03-06T10:53:20Z",
       "pushed_at": "2026-03-06T10:19:02Z",
       "git_url": "git://github.com/chenyme/grok2api.git",
       "ssh_url": "git@github.com:chenyme/grok2api.git",
@@ -22429,8 +22429,8 @@
       "svn_url": "https://github.com/chenyme/grok2api",
       "homepage": "https://grok2api-omega.vercel.app/",
       "size": 2523,
-      "stargazers_count": 2330,
-      "watchers_count": 2330,
+      "stargazers_count": 2331,
+      "watchers_count": 2331,
       "language": "Python",
       "has_issues": true,
       "has_projects": true,
@@ -22465,7 +22465,7 @@
       "visibility": "public",
       "forks": 798,
       "open_issues": 12,
-      "watchers": 2330,
+      "watchers": 2331,
       "default_branch": "main",
       "permissions": {
         "admin": false,
@@ -22550,7 +22550,7 @@
       "clone_url": "https://github.com/koobai/blog.git",
       "svn_url": "https://github.com/koobai/blog",
       "homepage": "https://koobai.com",
-      "size": 36048,
+      "size": 36131,
       "stargazers_count": 50,
       "watchers_count": 50,
       "language": "JavaScript",
@@ -23773,7 +23773,7 @@
       "releases_url": "https://api.github.com/repos/vikiboss/60s/releases{/id}",
       "deployments_url": "https://api.github.com/repos/vikiboss/60s/deployments",
       "created_at": "2022-11-30T01:19:43Z",
-      "updated_at": "2026-03-06T10:01:03Z",
+      "updated_at": "2026-03-06T10:56:15Z",
       "pushed_at": "2026-03-06T07:46:34Z",
       "git_url": "git://github.com/vikiboss/60s.git",
       "ssh_url": "git@github.com:vikiboss/60s.git",
@@ -23781,8 +23781,8 @@
       "svn_url": "https://github.com/vikiboss/60s",
       "homepage": "https://docs.60s-api.viki.moe",
       "size": 2872,
-      "stargazers_count": 4912,
-      "watchers_count": 4912,
+      "stargazers_count": 4913,
+      "watchers_count": 4913,
       "language": "TypeScript",
       "has_issues": true,
       "has_projects": false,
@@ -23827,7 +23827,7 @@
       "visibility": "public",
       "forks": 838,
       "open_issues": 4,
-      "watchers": 4912,
+      "watchers": 4913,
       "default_branch": "main",
       "permissions": {
         "admin": false,
@@ -24763,7 +24763,7 @@
       "has_wiki": true,
       "has_pages": false,
       "has_discussions": true,
-      "forks_count": 28,
+      "forks_count": 29,
       "mirror_url": null,
       "archived": false,
       "disabled": false,
@@ -24782,7 +24782,7 @@
       "pull_request_creation_policy": "all",
       "topics": [],
       "visibility": "public",
-      "forks": 28,
+      "forks": 29,
       "open_issues": 15,
       "watchers": 1679,
       "default_branch": "master",
@@ -25783,7 +25783,7 @@
       "releases_url": "https://api.github.com/repos/ILoveBingLu/CipherTalk/releases{/id}",
       "deployments_url": "https://api.github.com/repos/ILoveBingLu/CipherTalk/deployments",
       "created_at": "2026-01-08T09:20:48Z",
-      "updated_at": "2026-03-06T10:45:36Z",
+      "updated_at": "2026-03-06T10:53:40Z",
       "pushed_at": "2026-03-05T10:11:23Z",
       "git_url": "git://github.com/ILoveBingLu/CipherTalk.git",
       "ssh_url": "git@github.com:ILoveBingLu/CipherTalk.git",
@@ -25791,8 +25791,8 @@
       "svn_url": "https://github.com/ILoveBingLu/CipherTalk",
       "homepage": "",
       "size": 12706,
-      "stargazers_count": 1610,
-      "watchers_count": 1610,
+      "stargazers_count": 1611,
+      "watchers_count": 1611,
       "language": "TypeScript",
       "has_issues": true,
       "has_projects": true,
@@ -25821,7 +25821,7 @@
       "visibility": "public",
       "forks": 506,
       "open_issues": 25,
-      "watchers": 1610,
+      "watchers": 1611,
       "default_branch": "main",
       "permissions": {
         "admin": false,
@@ -27352,7 +27352,7 @@
       "has_wiki": true,
       "has_pages": false,
       "has_discussions": false,
-      "forks_count": 3144,
+      "forks_count": 3145,
       "mirror_url": null,
       "archived": false,
       "disabled": false,
@@ -27389,7 +27389,7 @@
         "wechatapp"
       ],
       "visibility": "public",
-      "forks": 3144,
+      "forks": 3145,
       "open_issues": 4,
       "watchers": 24795,
       "default_branch": "main",
@@ -32156,7 +32156,7 @@
       "releases_url": "https://api.github.com/repos/ling-drag0n/CloudPaste/releases{/id}",
       "deployments_url": "https://api.github.com/repos/ling-drag0n/CloudPaste/deployments",
       "created_at": "2025-04-02T10:23:52Z",
-      "updated_at": "2026-03-06T10:00:41Z",
+      "updated_at": "2026-03-06T10:56:37Z",
       "pushed_at": "2026-01-23T08:12:18Z",
       "git_url": "git://github.com/ling-drag0n/CloudPaste.git",
       "ssh_url": "git@github.com:ling-drag0n/CloudPaste.git",
@@ -32164,8 +32164,8 @@
       "svn_url": "https://github.com/ling-drag0n/CloudPaste",
       "homepage": "https://doc.cloudpaste.qzz.io",
       "size": 67507,
-      "stargazers_count": 2144,
-      "watchers_count": 2144,
+      "stargazers_count": 2145,
+      "watchers_count": 2145,
       "language": "JavaScript",
       "has_issues": true,
       "has_projects": true,
@@ -32206,7 +32206,7 @@
       "visibility": "public",
       "forks": 1333,
       "open_issues": 17,
-      "watchers": 2144,
+      "watchers": 2145,
       "default_branch": "main",
       "permissions": {
         "admin": false,
