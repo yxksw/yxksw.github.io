@@ -1,0 +1,6 @@
+[submodule "upstream"]
+	path = upstream
+	url = https://github.com/yuazhi/Imitate-GitHub-2.0.git
+[submodule "yuazhi-upstream"]
+	path = yuazhi-upstream
+	url = https://github.com/yuazhi/Imitate-GitHub-2.0.git
