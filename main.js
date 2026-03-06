@@ -711,9 +711,9 @@ async function fetchContributionData(
   forceRefresh = false,
 ) {
   try {
-    // 缓存键名
-    const cacheKey = `contribution_data_${year}`;
-    const cacheTimestampKey = `contribution_timestamp_${year}`;
+    // 缓存键名（添加版本号使旧缓存失效）
+    const cacheKey = `contribution_data_v2_${year}`;
+    const cacheTimestampKey = `contribution_timestamp_v2_${year}`;
 
     // 检查缓存是否有效（5分钟过期）
     const CACHE_DURATION = 5 * 60 * 1000; // 5分钟
@@ -1505,8 +1505,8 @@ async function checkContributionUpdates() {
     const currentYear = new Date().getFullYear();
     const yearToCheck = savedYear ? parseInt(savedYear) : currentYear;
 
-    const cacheKey = `contribution_data_${yearToCheck}`;
-    const cacheTimestampKey = `contribution_timestamp_${yearToCheck}`;
+    const cacheKey = `contribution_data_v2_${yearToCheck}`;
+    const cacheTimestampKey = `contribution_timestamp_v2_${yearToCheck}`;
 
     // 获取缓存的时间戳
     const cachedTimestamp = localStorage.getItem(cacheTimestampKey);
@@ -1589,8 +1589,8 @@ async function refreshContributionData() {
     console.log("手动刷新贡献数据...", yearToRefresh);
 
     // 清除所有相关的缓存，强制重新获取数据
-    const cacheKey = `contribution_data_${yearToRefresh}`;
-    const cacheTimestampKey = `contribution_timestamp_${yearToRefresh}`;
+    const cacheKey = `contribution_data_v2_${yearToRefresh}`;
+    const cacheTimestampKey = `contribution_timestamp_v2_${yearToRefresh}`;
 
     // 清除当前年份的缓存
     localStorage.removeItem(cacheKey);

@@ -114,20 +114,16 @@ async function fetchUserStars() {
   return stars;
 }
 
-async function fetchAllCommits() {
+async function fetchAllCommits(repos) {
   console.log("Fetching all commits...");
   const allCommits = [];
 
-  // Get all repos first
-  const repos = await fetchAllRepos();
-
-  // Fetch commits for each repo
-  for (const repo of repos.slice(0, 20)) {
-    // Limit to 20 repos to avoid rate limits
+  // Fetch commits for each repo (limit to 30 to avoid rate limits)
+  for (const repo of repos.slice(0, 30)) {
     try {
       console.log(`Fetching commits for ${repo.name}...`);
       const commits = await fetchWithRetry(
-        `${GITHUB_API_BASE}/repos/${GITHUB_USERNAME}/${repo.name}/commits?per_page=10&author=${GITHUB_USERNAME}`,
+        `${GITHUB_API_BASE}/repos/${GITHUB_USERNAME}/${repo.name}/commits?per_page=5&author=${GITHUB_USERNAME}`,
       );
 
       // Add repo info to each commit
@@ -139,10 +135,15 @@ async function fetchAllCommits() {
 
       allCommits.push(...commitsWithRepo);
 
-      // Add delay to avoid rate limiting
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      // Add longer delay to avoid rate limiting (especially without token)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
       console.error(`Error fetching commits for ${repo.name}:`, error.message);
+      // If we hit rate limit, stop fetching more commits
+      if (error.message.includes("rate limit")) {
+        console.log("Rate limit hit, stopping commits fetch...");
+        break;
+      }
     }
   }
 
@@ -186,7 +187,7 @@ async function main() {
       fetchUserEvents(),
       fetchUserForks(),
       fetchUserStars(),
-      fetchAllCommits(),
+      fetchAllCommits(repos),
     ]);
 
     // Prepare data object
