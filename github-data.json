@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-06T10:46:22.230Z",
+  "timestamp": "2026-03-06T10:51:06.219Z",
   "username": "yxksw",
   "repos": [
     {
@@ -70,8 +70,8 @@
       "releases_url": "https://api.github.com/repos/yxksw/home-yxksw/releases{/id}",
       "deployments_url": "https://api.github.com/repos/yxksw/home-yxksw/deployments",
       "created_at": "2026-03-04T06:26:16Z",
-      "updated_at": "2026-03-06T10:45:56Z",
-      "pushed_at": "2026-03-06T10:45:52Z",
+      "updated_at": "2026-03-06T10:50:38Z",
+      "pushed_at": "2026-03-06T10:50:35Z",
       "git_url": "git://github.com/yxksw/home-yxksw.git",
       "ssh_url": "git@github.com:yxksw/home-yxksw.git",
       "clone_url": "https://github.com/yxksw/home-yxksw.git",
@@ -112,25 +112,25 @@
         "pull": true
       },
       "lastCommit": {
-        "sha": "e305c12420a24dc169a6c3a615d3a855ad047af8",
-        "node_id": "C_kwDORd_FbdoAKGUzMDVjMTI0MjBhMjRkYzE2OWE2YzNhNjE1ZDNhODU1YWQwNDdhZjg",
+        "sha": "6e8776eaf2885aae009e41086be86b0b93e80b84",
+        "node_id": "C_kwDORd_FbdoAKDZlODc3NmVhZjI4ODVhYWUwMDllNDEwODZiZTg2YjBiOTNlODBiODQ",
         "commit": {
           "author": {
             "name": "Mao Chenyu",
             "email": "chenyumao815@outlook.com",
-            "date": "2026-03-06T10:45:43Z"
+            "date": "2026-03-06T10:50:26Z"
           },
           "committer": {
             "name": "Mao Chenyu",
             "email": "chenyumao815@outlook.com",
-            "date": "2026-03-06T10:45:43Z"
+            "date": "2026-03-06T10:50:26Z"
           },
-          "message": "chore: 更新main.js的版本号",
+          "message": "fix: 改进 PushEvent 的提交计数逻辑\n\n优化贡献数据统计中 PushEvent 的处理方式，优先从 allCommits 中查找相关提交，确保计数准确。同时改进提交信息的显示格式。",
           "tree": {
-            "sha": "54952aa17d5fb9cd375f79ff965d740db518ca32",
-            "url": "https://api.github.com/repos/yxksw/home-yxksw/git/trees/54952aa17d5fb9cd375f79ff965d740db518ca32"
+            "sha": "8ab5700cf35183e0b495b9cd0535baac2fad736f",
+            "url": "https://api.github.com/repos/yxksw/home-yxksw/git/trees/8ab5700cf35183e0b495b9cd0535baac2fad736f"
           },
-          "url": "https://api.github.com/repos/yxksw/home-yxksw/git/commits/e305c12420a24dc169a6c3a615d3a855ad047af8",
+          "url": "https://api.github.com/repos/yxksw/home-yxksw/git/commits/6e8776eaf2885aae009e41086be86b0b93e80b84",
           "comment_count": 0,
           "verification": {
             "verified": false,
@@ -140,9 +140,9 @@
             "verified_at": null
           }
         },
-        "url": "https://api.github.com/repos/yxksw/home-yxksw/commits/e305c12420a24dc169a6c3a615d3a855ad047af8",
-        "html_url": "https://github.com/yxksw/home-yxksw/commit/e305c12420a24dc169a6c3a615d3a855ad047af8",
-        "comments_url": "https://api.github.com/repos/yxksw/home-yxksw/commits/e305c12420a24dc169a6c3a615d3a855ad047af8/comments",
+        "url": "https://api.github.com/repos/yxksw/home-yxksw/commits/6e8776eaf2885aae009e41086be86b0b93e80b84",
+        "html_url": "https://github.com/yxksw/home-yxksw/commit/6e8776eaf2885aae009e41086be86b0b93e80b84",
+        "comments_url": "https://api.github.com/repos/yxksw/home-yxksw/commits/6e8776eaf2885aae009e41086be86b0b93e80b84/comments",
         "author": {
           "login": "zsxcoder",
           "id": 249214916,
@@ -187,14 +187,14 @@
         },
         "parents": [
           {
-            "sha": "6ec3b0ea09f613a53d9767ca257367844fa4afa5",
-            "url": "https://api.github.com/repos/yxksw/home-yxksw/commits/6ec3b0ea09f613a53d9767ca257367844fa4afa5",
-            "html_url": "https://github.com/yxksw/home-yxksw/commit/6ec3b0ea09f613a53d9767ca257367844fa4afa5"
+            "sha": "92224a92acac6720c69856f840b73f3959f7fd34",
+            "url": "https://api.github.com/repos/yxksw/home-yxksw/commits/92224a92acac6720c69856f840b73f3959f7fd34",
+            "html_url": "https://github.com/yxksw/home-yxksw/commit/92224a92acac6720c69856f840b73f3959f7fd34"
           }
         ]
       },
       "languages": {
-        "JavaScript": 216274,
+        "JavaScript": 217155,
         "CSS": 190611,
         "HTML": 12960
       },
@@ -9936,6 +9936,32 @@
   ],
   "events": [
     {
+      "id": "9105123233",
+      "type": "PushEvent",
+      "actor": {
+        "id": 260226767,
+        "login": "yxksw",
+        "display_login": "yxksw",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/yxksw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/260226767?"
+      },
+      "repo": {
+        "id": 1172292973,
+        "name": "yxksw/home-yxksw",
+        "url": "https://api.github.com/repos/yxksw/home-yxksw"
+      },
+      "payload": {
+        "repository_id": 1172292973,
+        "push_id": 31398909778,
+        "ref": "refs/heads/main",
+        "head": "6e8776eaf2885aae009e41086be86b0b93e80b84",
+        "before": "92224a92acac6720c69856f840b73f3959f7fd34"
+      },
+      "public": true,
+      "created_at": "2026-03-06T10:50:35Z"
+    },
+    {
       "id": "9104972334",
       "type": "PushEvent",
       "actor": {
@@ -14338,32 +14364,6 @@
       },
       "public": true,
       "created_at": "2026-03-04T07:21:16Z"
-    },
-    {
-      "id": "9016781199",
-      "type": "PushEvent",
-      "actor": {
-        "id": 260226767,
-        "login": "yxksw",
-        "display_login": "yxksw",
-        "gravatar_id": "",
-        "url": "https://api.github.com/users/yxksw",
-        "avatar_url": "https://avatars.githubusercontent.com/u/260226767?"
-      },
-      "repo": {
-        "id": 1172292973,
-        "name": "yxksw/home-yxksw",
-        "url": "https://api.github.com/repos/yxksw/home-yxksw"
-      },
-      "payload": {
-        "repository_id": 1172292973,
-        "push_id": 31310741623,
-        "ref": "refs/heads/main",
-        "head": "1fad01c3fefda46b969435f2dc6f6afe2dc6cf94",
-        "before": "7fe91d2cacd27cf8dae11b2f11d0fd3d74654a61"
-      },
-      "public": true,
-      "created_at": "2026-03-04T07:12:15Z"
     }
   ],
   "forks": [
@@ -14435,8 +14435,8 @@
       "releases_url": "https://api.github.com/repos/yxksw/home-yxksw/releases{/id}",
       "deployments_url": "https://api.github.com/repos/yxksw/home-yxksw/deployments",
       "created_at": "2026-03-04T06:26:16Z",
-      "updated_at": "2026-03-06T10:45:56Z",
-      "pushed_at": "2026-03-06T10:45:52Z",
+      "updated_at": "2026-03-06T10:50:38Z",
+      "pushed_at": "2026-03-06T10:50:35Z",
       "git_url": "git://github.com/yxksw/home-yxksw.git",
       "ssh_url": "git@github.com:yxksw/home-yxksw.git",
       "clone_url": "https://github.com/yxksw/home-yxksw.git",
@@ -22896,7 +22896,7 @@
       "has_wiki": false,
       "has_pages": false,
       "has_discussions": true,
-      "forks_count": 241,
+      "forks_count": 242,
       "mirror_url": null,
       "archived": false,
       "disabled": false,
@@ -22925,7 +22925,7 @@
         "personal"
       ],
       "visibility": "public",
-      "forks": 241,
+      "forks": 242,
       "open_issues": 12,
       "watchers": 3041,
       "default_branch": "main",
@@ -24883,7 +24883,7 @@
       "mirror_url": null,
       "archived": false,
       "disabled": false,
-      "open_issues_count": 363,
+      "open_issues_count": 364,
       "license": {
         "key": "mit",
         "name": "MIT License",
@@ -24899,7 +24899,7 @@
       "topics": [],
       "visibility": "public",
       "forks": 226,
-      "open_issues": 363,
+      "open_issues": 364,
       "watchers": 3241,
       "default_branch": "master",
       "permissions": {
